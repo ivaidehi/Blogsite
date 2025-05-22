@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4caf50;
+            --secondary-color: #f44336;
+            --dark-gray: #333;
+            --light-gray: #f5f5f5;
+            --medium-gray: #e0e0e0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--light-gray);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--dark-gray);
+        }
+        
+        .dashboard-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 700px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .user-profile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-image-container {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--primary-color);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .no-image-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: var(--medium-gray);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: #9e9e9e;
+            border: 4px solid #ddd;
+        }
+        
+        .user-details {
+            width: 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            text-align: left;
+            margin-top: 1.5rem;
+        }
+        
+        .detail-card {
+            background: var(--light-gray);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        .detail-card h3 {
+            margin-top: 0;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-size: 1rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detail-card p {
+            margin: 0;
+            font-size: 1.1rem;
+            color: var(--dark-gray);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.8rem 1.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3e8e41;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background-color: #d32f2f;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background-color: #555;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #444;
+            transform: translateY(-2px);
+        }
+        
+        .debug-info {
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 2rem;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <h1>Welcome to Dashboard, {{ user.first_name }}!</h1>
+        
+        <div class="user-profile">
+            <div class="profile-image-container">
+                {% if user.profile_image %}
+                <img 
+                    src="{{ user.profile_image.url }}" 
+                    alt="Profile Image" 
+                    class="profile-image"
+                    onerror="this.onerror=null;this.src='https://res.cloudinary.com/demo/image/upload/v1632759887/placeholder.png';"
+                >
+                {% else %}
+                <div class="no-image-placeholder">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="user-details">
+                <div class="detail-card">
+                    <h3>Personal Info</h3>
+                    <p><strong>Registered As: </strong>{{ register_as }}</p>
+                    <p><strong>Username:</strong> {{ user.username }}</p>
+                    <p><strong>Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+                    <p><strong>Email:</strong> {{ user.email }}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Address</h3>
+                    <p><strong>House No/Name:</strong> {{ user.house_no_name }}</p>
+                    <p><strong>Area:</strong> {{ user.area }}</p>
+                    <p><strong>Landmark:</strong> {{ user.landmark }}</p>
+                </div>
+                
+                <div class="detail-card">
+                    <h3>Location</h3>
+                    <p><strong>City:</strong> {{ user.city }}</p>
+                    <p><strong>State:</strong> {{ user.state }}</p>
+                    <p><strong>Pincode:</strong> {{ user.pincode }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <form action="{% url 'logout' %}" method="post" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </button>
+            </form>
+            <form action="{% url 'delete_account' %}" method="post" class="inline-form">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-secondary">
+                    <i class="fas fa-trash-alt"></i> Delete Account
+                </button>
+            </form>
+        </div>
+        
+        {% if debug %}
+        <div class="debug-info">
+            <p><strong>Debug Image URL:</strong> {{ user.profile_image.url }}</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

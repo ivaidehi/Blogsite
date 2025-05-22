@@ -1,0 +1,147 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Draft Blogs</title>
+  <link rel="stylesheet" href="{% static 'style.css' %}" />
+  <style>
+    body {
+      align-items: flex-start; /* Changed from center to flex-start */
+      padding-top: 1rem; /* Reduced top padding */
+    }
+    
+    .drafts-container {
+      width: 100%;
+      max-width: 100%;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .drafts-header {
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-gray);
+    }
+    
+    .drafts-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .draft-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid var(--border-gray);
+      transition: background-color 0.2s;
+    }
+    
+    .draft-item:hover {
+      background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .draft-info {
+      flex: 1;
+    }
+    
+    .draft-title {
+      font-weight: 600;
+      color: var(--dark-gray);
+      margin-bottom: 0.25rem;
+    }
+    
+    .draft-date {
+      font-size: 0.85rem;
+      color: var(--medium-gray);
+    }
+    
+    .draft-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    
+    .btn-publish {
+      background-color: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-publish:hover {
+      background-color: var(--primary-dark);
+    }
+    
+    .btn-delete {
+      background-color: var(--secondary-color);
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background-color 0.2s;
+    }
+    
+    .btn-delete:hover {
+      background-color: var(--secondary-dark);
+    }
+    
+    .empty-state {
+      padding: 2rem;
+      text-align: center;
+      color: var(--medium-gray);
+    }
+    
+    @media (max-width: 768px) {
+      .draft-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .draft-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="drafts-container">
+    <div class="drafts-header">
+      <h2 style="color: var(--primary-color); margin: 0;">Your Draft Blogs</h2>
+    </div>
+
+    {% if drafts %}
+      <ul class="drafts-list">
+        {% for draft in drafts %}
+          <li class="draft-item">
+            <div class="draft-info">
+              <div class="draft-title">{{ draft.title }}</div>
+              <div class="draft-date">Saved on: {{ draft.created_at|date:"F j, Y, g:i a"|default:"Just now" }}</div>
+            </div>
+            <div class="draft-actions">
+              <form method="post" style="display: inline;">
+                {% csrf_token %}
+                <input type="hidden" name="index" value="{{ forloop.counter0 }}">
+                <button type="submit" name="publish" class="btn-publish">Publish</button>
+                <button type="submit" name="delete" class="btn-delete">Delete</button>
+              </form>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <div class="empty-state">
+        <p>No drafts saved yet.</p>
+      </div>
+    {% endif %}
+  </div>
+</body>
+</html>

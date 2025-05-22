@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign Up</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+  </head>
+  <body>
+    <div class="signup-container">
+      <div class="signup-header">
+        <h2>Create Your Account</h2>
+      </div>
+
+      <div class="signup-body">
+        {% if messages %}
+        <div class="messages">
+          {% for message in messages %}
+          <div class="{{ message.tags }}">{{ message }}</div>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+        <form method="post" id="signupForm" enctype="multipart/form-data">
+          {% csrf_token %}
+
+          <div class="profile-upload">
+            <div class="profile-image-container">
+              <div class="profile-placeholder" id="profilePlaceholder">
+                <i class="fas fa-user"></i>
+              </div>
+              <img
+                src=""
+                alt="Profile Preview"
+                class="profile-preview"
+                id="profilePreview"
+              />
+              <label for="id_profile_image" class="upload-button">
+                <i class="fas fa-camera"></i>
+              </label>
+              <input
+                type="file"
+                name="profile_image"
+                id="id_profile_image"
+                class="form-control-file"
+                style="display: none"
+                onchange="previewImage(event)"
+              />
+            </div>
+            <p class="upload-text">Upload a profile picture </p>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Personal Information</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label class="required" for="id_register_as">Register as</label>
+                <div class="radio-group">
+                  {% for radio in form.register_as %}
+                  <label class="radio-option">
+                    {{ radio.tag }} {{ radio.choice_label }}
+                  </label>
+                  {% endfor %}
+                </div>
+                {% if form.register_as.errors %}
+                <div class="error">{{ form.register_as.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_first_name" class="required">First Name</label>
+                {{ form.first_name }} {% if form.first_name.errors %}
+                <div class="error">{{ form.first_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_last_name" class="required">Last Name</label>
+                {{ form.last_name }} {% if form.last_name.errors %}
+                <div class="error">{{ form.last_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_username" class="required">Username</label>
+                {{ form.username }} {% if form.username.errors %}
+                <div class="error">{{ form.username.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_email" class="required">Email</label>
+                {{ form.email }} {% if form.email.errors %}
+                <div class="error">{{ form.email.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Address Information</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="id_house_no_name" class="required"
+                  >House No / Name</label
+                >
+                {{ form.house_no_name }} {% if form.house_no_name.errors %}
+                <div class="error">{{ form.house_no_name.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_area" class="required">Area</label>
+                {{ form.area }} {% if form.area.errors %}
+                <div class="error">{{ form.area.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_landmark" class="required">Landmark</label>
+                {{ form.landmark }} {% if form.landmark.errors %}
+                <div class="error">{{ form.landmark.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_pincode" class="required">Pincode</label>
+                {{ form.pincode }} {% if form.pincode.errors %}
+                <div class="error">{{ form.pincode.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_city" class="required">Town / City</label>
+                {{ form.city }} {% if form.city.errors %}
+                <div class="error">{{ form.city.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_state" class="required">State</label>
+                {{ form.state }} {% if form.state.errors %}
+                <div class="error">{{ form.state.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <h3 class="section-title">Security</h3>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="id_password1" class="required">Password</label>
+                <div class="password-field">
+                  {{ form.password1 }}
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('id_password1', this)"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+
+                <div class="error" id="passwordWarning"></div>
+
+                {% if form.password1.errors %}
+                <div class="error">{{ form.password1.errors.0 }}</div>
+                {% endif %}
+              </div>
+
+              <div class="form-group">
+                <label for="id_password2" class="required"
+                  >Confirm Password</label
+                >
+                <div class="password-field">
+                  {{ form.password2 }}
+                  <button
+                    type="button"
+                    class="password-toggle"
+                    onclick="togglePassword('id_password2', this)"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </button>
+                </div>
+                <div
+                  class="error password-mismatch"
+                  id="passwordMismatch"
+                  style="display: none"
+                >
+                  Passwords do not match
+                </div>
+                {% if form.password2.errors %}
+                <div class="error">{{ form.password2.errors.0 }}</div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-button">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+
+          <div class="auth-link">
+            <p>
+              Already have an account? <a href="{% url 'login' %}">Log in</a>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="{% static 'script.js' %}" defer></script>
+  </body>
+</html>

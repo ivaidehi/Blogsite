@@ -1,0 +1,324 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Blog Dashboard</title>
+    <link rel="stylesheet" href="{% static 'style.css' %}" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        display: block;
+        padding: 0;
+        margin: 0;
+      }
+
+      .page-wrapper {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem 1rem;
+      }
+
+      .navbar {
+        background-color: white;
+        border-bottom: 1px solid var(--border-gray);
+        padding: 1rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: sticky;
+        top: 0;
+        z-index: 1000;
+      }
+
+      .nav-left h1 {
+        color: var(--primary-dark);
+        font-size: 1.5rem;
+      }
+
+      .nav-right {
+        display: flex;
+        gap: 1.5rem;
+        align-items: center;
+      }
+
+      .nav-right a {
+        text-decoration: none;
+        color: var(--primary-dark);
+        font-weight: 500;
+        transition: color 0.3s ease;
+      }
+
+      .nav-right a:hover {
+        color: var(--dark-gray);
+      }
+
+      .logout-button {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .logout-button:hover {
+        background-color: var(--dark-gray);
+      }
+
+      .category-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+      }
+
+      .category-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+      }
+
+      .category-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+      }
+
+      .category-card h3 {
+        color: var(--primary-dark);
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .category-card p {
+        font-size: 0.95rem;
+        color: var(--medium-gray);
+      }
+
+      .add-blog-button {
+        background-color: var(--primary-dark);
+        color: white !important;
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      .add-blog-button:hover {
+        background-color: white;
+        color: var(--primary-dark) !important;
+      }
+
+      .blog-posts {
+        display: none;
+        margin-top: 2rem;
+      }
+
+      .blog-post {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+        margin-bottom: 2rem;
+      }
+
+      .blog-post h2 {
+        color: var(--primary-dark);
+        margin-bottom: 1rem;
+      }
+
+      .blog-post img {
+        width: 100%;
+        max-width: 600px;
+        height: 300px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .blog-post .meta {
+        color: var(--medium-gray);
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+      }
+
+      .back-button {
+        display: inline-block;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+        text-decoration: none;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="navbar">
+      <div class="nav-left">
+        <h1>Doctor Dashboard</h1>
+        <p style="margin: 0; font-weight: 500; color: var(--primary-dark)">
+          Welcome, {{ request.user.first_name }}!
+        </p>
+      </div>
+      <div class="nav-right">
+        <a href="{% url 'add_blog' %}" class="add-blog-button">
+          <i class="fas fa-plus-circle"></i> Add Blog
+        </a>
+        <a href="#" class="home-link" onclick="showDashboard()">Home</a>
+        <a href="#">Categories</a>
+        <a href="{% url 'drafts' %}">Drafts</a>
+        <form method="post" action="{% url 'logout' %}">
+          {% csrf_token %}
+          <button class="logout-button">
+            <i class="fas fa-sign-out-alt"></i> Logout
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div class="page-wrapper" id="dashboardView">
+      <main>
+        <div id="categoriesView">
+          <h2 style="color: var(--primary-color); margin-bottom: 1.5rem">
+            Categories
+          </h2>
+          <section class="category-container">
+            <div class="category-card" onclick="showBlogs('Mental Health')">
+              <h3>Mental Health</h3>
+              <p>
+                Explore blogs related to mental well-being, therapies, stress
+                and emotional health.
+              </p>
+            </div>
+            <div class="category-card" onclick="showBlogs('Heart Disease')">
+              <h3>Heart Disease</h3>
+              <p>
+                Find informative blogs on cardiovascular health, prevention, and
+                treatments.
+              </p>
+            </div>
+            <div class="category-card" onclick="showBlogs('Covid-19')">
+              <h3>Covid-19</h3>
+              <p>
+                Stay informed with the latest updates, symptoms, and recovery
+                advice on Covid-19.
+              </p>
+            </div>
+            <div class="category-card" onclick="showBlogs('Immunization')">
+              <h3>Immunization</h3>
+              <p>
+                Read about vaccinations, schedules, and their importance in
+                public health.
+              </p>
+            </div>
+          </section>
+        </div>
+
+        <div id="blogsView" class="blog-posts">
+          <a href="#" class="back-button" onclick="showCategories()">
+            <i class="fas fa-arrow-left"></i> Back to Categories
+          </a>
+          <h2
+            id="categoryTitle"
+            style="color: var(--primary-color); margin-bottom: 1.5rem"
+          ></h2>
+          <div id="blogPostsContainer"></div>
+        </div>
+      </main>
+    </div>
+
+    <script>
+      function showBlogs(category) {
+        document.getElementById("categoriesView").style.display = "none";
+        document.getElementById("blogsView").style.display = "block";
+        document.getElementById("categoryTitle").textContent = category;
+        document.getElementById("blogPostsContainer").innerHTML = "";
+
+        fetch(`/get-blogs/?category=${encodeURIComponent(category)}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.length > 0) {
+              data.forEach((blog, index) => {
+                const blogPost = document.createElement("div");
+                blogPost.className = "blog-post";
+
+                const imageUrl =
+                  blog.image ||
+                  "https://via.placeholder.com/600x400?text=No+Image";
+
+                const words = blog.summary.split(" ");
+                const isLong = words.length > 15;
+                const truncated = words.slice(0, 15).join(" ") + "...";
+
+                const summaryHTML = isLong
+                  ? `<span id="summary-${index}">${truncated}</span>
+                 <a href="#" onclick="expandSummary(${index}, \`${blog.summary.replace(
+                      /`/g,
+                      "\\`"
+                    )}\`); return false;">Read More</a>`
+                  : `<span>${blog.summary}</span>`;
+
+                blogPost.innerHTML = `
+              <h2>${blog.title}</h2>
+              <img src="${imageUrl}" alt="${blog.title}">
+              <div class="meta">
+                  Posted on ${new Date(blog.created_at).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
+              </div>
+              <p><strong>Summary:</strong> ${summaryHTML}</p>
+            `;
+
+                document
+                  .getElementById("blogPostsContainer")
+                  .appendChild(blogPost);
+              });
+            } else {
+              document.getElementById("blogPostsContainer").innerHTML =
+                "<p>No blogs found in this category.</p>";
+            }
+          })
+          .catch((error) => {
+            console.error("Error fetching blogs:", error);
+            document.getElementById("blogPostsContainer").innerHTML =
+              "<p>Error loading blogs. Please try again.</p>";
+          });
+      }
+
+      function expandSummary(index, fullSummary) {
+        const summarySpan = document.getElementById(`summary-${index}`);
+        summarySpan.innerHTML = fullSummary;
+      }
+
+      function showCategories() {
+        document.getElementById("categoriesView").style.display = "block";
+        document.getElementById("blogsView").style.display = "none";
+      }
+
+      function showDashboard() {
+        document.getElementById("dashboardView").style.display = "block";
+        showCategories();
+      }
+    </script>
+  </body>
+</html>
